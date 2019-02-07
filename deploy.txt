@@ -1,0 +1,89 @@
+[ 배포및 운영준비 ]
+1. 아마존 로그인 후 서비스 > EC2 진입
+2. github.com 로그인
+3. https://git-scm.com/download 에서 
+   본인 os에 맞게 다운로드
+=========================================================
+1. git 설치
+ > Git-2.20.1-64-bit.exe
+ > 특이사항 없음 (기본 툴을 본인 에디터로 맞춤)
+   여기서는 vs code에 기본 에디터로 설정(않해도됨)
+ > 콘솔 열고 
+   git --version 
+   구동여부 및 패스 확인
+
+2. github 저장소(repository 생성)
+ > https://github.com/new
+ > 저장소명, 설명, 공개여부, readme 체크
+ > 커밋시 영향받을 파일 설정(파이썬), 라이센스(옵션)
+
+3. 프로젝트 내려 받기
+ > 이상황은 프로젝트 최초 시작시 저장소를 만들어서
+ > 그 기반에서 개발을 시작할때 상황
+ > 원하는 디렉토리로 이동
+ > 콘솔 or 터미널 어디서는 사용 가능
+ > git clone https://github.com/bongseop2822/first.git
+ > 해당 프로젝트를 vs code로 오픈 => first 오픈
+ > 터미널 오픈
+   git config --global user.name 기트허브본인이름
+   git config --global user.email 기트허브본인이메일
+ > 개발 (소스, 리소스, 등등)
+ > 왼쪽 메뉴중 3번째(source control 클릭)
+ > 왼쪽 하단에 (branch아이콘)master 클릭 > master 선택
+ > 메시지 기입 > commit 클릭 ( ctrl + enter )
+ > 왼쪽 하단에 상하 화살표를 보면 push쪽에 1이 생김
+ > 클릭 > ok > 계정 문의 1회만(설정하기나름) (이름, 비번)
+
+4. aws에 리눅스 서버 구성(ubuntu 18.x)
+ > 고정 IP 나 도메인, 도메인 연결
+ > 리눅스 서버 생성 .. 
+ > 도메인
+   ec2-54-180-149-37.ap-northeast-2.compute.amazonaws.com
+   ipv4
+   54.180.149.37 
+ > 보안그룹 > lanched_wizard1 클릭 > 인바운드 선택
+   > 편집 > 추가 > http 선택 (80포트)
+ > 연결 정보
+   > 대시보드 > 해당 인스턴스(서버) > 우클릭 > 연결 
+   > 리눅스 or 맥인경우
+     chmod 400 xx.pem
+     ssh -i "xx.pem" ubuntu@ec2-54-180-149-37.ap-northeast-2.compute.amazonaws.com
+   > 윈도우인 경우
+     1) putty.exe, puttyGen.exe 다운로드
+     2) puttyGen을 통해 pem->ppk 파일 생성(1회)
+        > 실행 > load > *.pem 선택(*.*) 
+        > save private key > *.ppk 저장
+     3) putty.exe를 통해 접속
+        > 주소창에 
+          (연결 정보 중에 맨 밑에 부분 ubuntu@~ 시작되는 부분 카피)
+          ubuntu@ec2-54-180-149-37.ap-northeast-2.compute.amazonaws.com
+        > 세션 이름 넣고 save
+        > connection > SSH > *.ppk 연결 정보 설정
+        > session 이동 하고 > save > open
+	--------------------------------------
+        > 이후 > 세션 선택 > load > open
+ > 리눅스 접속후 
+   - 일반적으로는 
+     sudo apt-get update
+     sudo apt-get upgrade
+     sudo apt-get install python3-pip ... 진행되야 하나,
+   - 여기서는
+     febric를 이용하여 리눅스에 세팅해야할 사항
+     파이썬 flask를 운영하기 위한 모듈
+     git를 이용하여 소스는 내려받고 관리하는 부분
+     flask는 단독 구동이 가능하나 통상 apache, nginx 서버
+     를 연동해서 운영하기 때문에 apache를 세팅하여 
+     flask 서버와 연동하는 부분까지 모두 febric으로 
+     구성하여 자동화 시킨다
+  
+
+5. 페브릭 작업 
+ > 개발PC에서 작업
+ > pip(3) install fabric3
+ > deploy.jon 작성
+ > fabfile.py 작성
+ > 최초 세팅시 (프로젝트 내에서)
+   > fab new_initServer 
+ > 소스를 수정했다면
+   > github에 commit 및 동기화
+   > fab update
